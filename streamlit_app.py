@@ -20,22 +20,43 @@ SYSTEM_PROMPT = os.getenv("SYSTEM_PROMPT")
 # Set up Google Gemini-Pro AI model
 gpt.configure(api_key=API_KEY)
 model = gpt.GenerativeModel(
-    model_name="gemini-pro",
-    system_instruction=os.getenv(SYSTEM_PROMPT))
+    model_name="gemini-2.0-flash",
+    system_instruction=SYSTEM_PROMPT)
 
 # Initialize chat session in Streamlit if not already present
 if "chat_session" not in st.session_state:
     st.session_state.chat_session = model.start_chat(history=[
-        {"role": "model",
-         "content": "Alright, let's get this show on the road. What cosmic queries do you have for me today? Don't waste my time with anything boring."}
+        {
+            "role": "model",
+            "parts": [
+                {"text": "Alright, let's get this show on the road. What cosmic queries do you have for me today? Don't waste my time with anything boring."}
+            ],
+        }
     ])
 
 # Display the chatbot's title on the page
 st.title("🤖 Chat with Tony Stark the Astrologer")
 # Display the chat history
 for msg in st.session_state.chat_session.history:
-    with st.chat_message(map_role(msg["role"])):
-        st.markdown(msg["content"])
+    role = getattr(msg, "role", None) if not isinstance(msg, dict) else msg.get("role")
+    parts = getattr(msg, "parts", None) if not isinstance(msg, dict) else msg.get("parts")
+    text = ""
+    if parts:
+        collected = []
+        for p in parts:
+            if hasattr(p, "text") and getattr(p, "text"):
+                collected.append(p.text)
+            elif isinstance(p, dict):
+                t = p.get("text")
+                if t:
+                    collected.append(t)
+        text = "\n".join(collected)
+    else:
+        content = getattr(msg, "content", None) if not isinstance(msg, dict) else msg.get("content")
+        if content:
+            text = str(content)
+    with st.chat_message(map_role(role)):
+        st.markdown(text or "")
 
 # Input field for user's message
 user_input = st.chat_input("Ask Tony...")
@@ -50,6 +71,4 @@ if user_input:
     with st.chat_message("assistant"):
         st.markdown(gemini_response)
 
-    # Add user and assistant messages to the chat history
-    st.session_state.chat_session.history.append({"role": "user", "content": user_input})
-    st.session_state.chat_session.history.append({"role": "model", "content": gemini_response})
+    # No manual history mutation needed; ChatSession updates history automatically
