@@ -9,7 +9,8 @@ A simple Streamlit app that shows how to build a chatbot using Google's [Gemini 
 2. A [Gemini API key](https://ai.google.dev/gemini-api/docs/quickstart)
 3. A [Google Cloud Platform](https://cloud.google.com/) account
 4. A [Streamlit Cloud](https://streamlit.io/cloud) account
-5. Python 3.8 or higher
+5. Python 3.8 or higher installed on your machine
+6. Git installed on your machine
 
 ### How to run it on your own machine
 
