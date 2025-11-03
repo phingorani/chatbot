@@ -15,12 +15,14 @@ st.set_page_config(
 )
 
 API_KEY = os.getenv("GOOGLE_API_KEY")
+GEMINI_MODEL = os.getenv("GOOGLE_API_KEY") or "gemini-2.0-flash"
+BOT_TITLE = os.getenv("BOT_TITLE") or "AI bot"
 SYSTEM_PROMPT = os.getenv("SYSTEM_PROMPT")
 
 # Set up Google Gemini-Pro AI model
 gpt.configure(api_key=API_KEY)
 model = gpt.GenerativeModel(
-    model_name="gemini-2.0-flash",
+    model_name=GEMINI_MODEL,
     system_instruction=SYSTEM_PROMPT)
 
 # Initialize chat session in Streamlit if not already present
@@ -35,7 +37,7 @@ if "chat_session" not in st.session_state:
     ])
 
 # Display the chatbot's title on the page
-st.title("🤖 Chat with Tony Stark the Astrologer")
+st.title("🤖 Chat with " + BOT_TITLE)
 # Display the chat history
 for msg in st.session_state.chat_session.history:
     role = getattr(msg, "role", None) if not isinstance(msg, dict) else msg.get("role")
@@ -59,7 +61,7 @@ for msg in st.session_state.chat_session.history:
         st.markdown(text or "")
 
 # Input field for user's message
-user_input = st.chat_input("Ask Tony...")
+user_input = st.chat_input("Ask " +BOT_TITLE+"...")
 if user_input:
     # Add user's message to chat and display it
     st.chat_message("user").markdown(user_input)
