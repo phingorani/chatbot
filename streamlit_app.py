@@ -15,7 +15,7 @@ st.set_page_config(
 )
 
 API_KEY = os.getenv("GOOGLE_API_KEY")
-GEMINI_MODEL = os.getenv("GOOGLE_API_KEY") or "gemini-2.0-flash"
+GEMINI_MODEL = os.getenv("GEMINI_MODEL") or "gemini-2.5-flash-lite"
 BOT_TITLE = os.getenv("BOT_TITLE") or "AI bot"
 SYSTEM_PROMPT = os.getenv("SYSTEM_PROMPT")
 
