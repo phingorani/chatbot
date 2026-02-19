@@ -1,9 +1,11 @@
 import os
 import streamlit as st
+import json
+import time
+from datetime import datetime
 from dotenv import load_dotenv
 from google import generativeai as gpt
 from functions import *
-from datetime import datetime
 
 load_dotenv()
 
@@ -263,7 +265,15 @@ for msg in st.session_state.messages:
                 from pygments.lexers import get_lexer_by_name
                 from pygments.formatters import HtmlFormatter
                 from markdown import markdown
+
+                use_pygments = True
             except ImportError:
+                use_pygments = False
+
+            pattern = r"```(\w*)\n(.*?)\n```"
+            parts = re.split(pattern, content, flags=re.DOTALL)
+
+            if not use_pygments:
                 for i, part in enumerate(parts):
                     if i % 3 == 1:
                         st.code(part, language=parts[i - 1] if i > 0 else None)
@@ -273,9 +283,6 @@ for msg in st.session_state.messages:
                         if part:
                             st.markdown(part)
                 continue
-
-            pattern = r"```(\w*)\n(.*?)\n```"
-            parts = re.split(pattern, content, flags=re.DOTALL)
 
             for i, part in enumerate(parts):
                 if i % 3 == 1:
